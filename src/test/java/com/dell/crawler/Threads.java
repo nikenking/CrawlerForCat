@@ -15,27 +15,10 @@ import java.util.List;
 class Threads {
     public static void main(String[] args) throws InterruptedException {
         System.setProperty("webdriver.chrome.driver", "C:\\Program Files\\Google\\Chrome\\Application\\chromedriver.exe");
-        String kw = "https://www.a520z6oekgzc.com/home/piclist/7/832-1.html";
         WebDriver driver = new ChromeDriver();
-        driver.get(kw);
-        JavascriptExecutor js = (JavascriptExecutor) driver;
-        String mother = driver.getWindowHandle();
-        List<String> pageLinks = STools.getPageLinks(driver);
-        List<String> handlers = new ArrayList<>();
-        for (String pageLink : pageLinks) {
-            js.executeScript("window.open('"+pageLink+"')");
-            for (String handle : driver.getWindowHandles()) {
-                if (!mother.equals(handle)&&!handlers.contains(handle)){
-                    handlers.add(handle);
-                }
-            }
-        }
-        Thread.sleep(3000);
-        for (int i = 0; i < handlers.size(); i++) {
-            driver.switchTo().window(handlers.get(i));
-            Thread.sleep(200);
-            js.executeScript("window.stop()");
-            STools.ThreadDownload(driver,"porn"+i);
+        for (int i = 2; i < 5; i++) {
+            driver.get("https://www.a520z6oekgzc.com/home/piclist/7/832-" + i + ".html");
+            STools.PageDownload(driver);
         }
     }
 }

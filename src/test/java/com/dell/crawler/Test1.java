@@ -13,12 +13,13 @@ import java.util.Set;
 public class Test1 {
     public static void main(String[] args) throws InterruptedException {
         System.setProperty("webdriver.chrome.driver", "C:\\Program Files\\Google\\Chrome\\Application\\chromedriver.exe");
-        String kw = "https://www.a520z6oekgzc.com/home/pic/1045974_7.html";//得到url
+        String kw = "https://www.a520z6oekgzc.com/home/piclist/7/832-1.html";
         WebDriver driver = new ChromeDriver();
         JavascriptExecutor js = (JavascriptExecutor) driver;
         driver.get(kw);//链接
-        Thread.sleep(2000);
-        js.executeScript("window.stop()");
-        STools.ThreadDownload(driver,"porn1");
+        List<String> pagetitles = STools.getPagetitles(driver);
+        for (String pagetitle : pagetitles) {
+            System.out.println(pagetitle);
+        }
     }
 }
