@@ -16,29 +16,7 @@ import java.net.URLConnection;
 import java.util.*;
 import java.util.regex.Pattern;
 
-public class STools {
-    /**
-     * 获得当页所有的图片链接,return type map,只针对porn卡通单独页
-     */
-    public static Map<String, Integer> getLinks(WebDriver driver, int time) throws InterruptedException {
-        Map<String, Integer> map = new HashMap<>();
-        JavascriptExecutor js = (JavascriptExecutor) driver;
-        for (int i = 0; i < time; i++) {
-            List<WebElement> img = driver.findElements(By.tagName("img"));
-            for (WebElement item : img) {
-                String src = item.getAttribute("src");
-                /*https://pic1.hmpicimage.com/katong/2020/10/31/2773dda6-cae2-474b-b86c-93992763515d/001.jpg*/
-                if (!map.containsKey(src) && src != null && Pattern.matches("https://.*\\.com/katong/.*\\.jpg", src)) {
-                    map.put(src, map.size() + 1);
-                    System.out.println(src);
-                }
-            }
-            js.executeScript("window.scrollTo(0,document.body.scrollHeight)");
-            Thread.sleep(1000);
-        }
-        return map;
-    }
-
+public class Tools {
     /**
      * 获得当前界面可用的图片链接,return type list,只针对porn卡通单独页
      */
@@ -83,47 +61,17 @@ public class STools {
     }
 
     /**
-     * 获取当前页面所有的图片显示页可用跳转链接,只针对porn卡通某一页
-     */
-    public static List<String> getPageLinks(WebDriver driver) {
-        List<String> list = new ArrayList<>();
-        List<WebElement> pages = driver.findElements(By.tagName("a"));
-        for (WebElement page : pages) {
-            String href = page.getAttribute("href");
-            if (href != null && !list.contains(href) && Pattern.matches("https://www.*com/home/pic/.*?\\d+.*?.html", href)) {
-                list.add(href);
-                System.out.println("get one href :" + href);
-            }
-        }
-        return list;
-    }
-
-    /**
      * 多线程下载所有通过getlinklist得到的当前所有可用图片，到指定name文件夹下
      */
     public static void ThreadDownload(WebDriver driver, String name) throws InterruptedException {
         System.out.println("start img getlinks");
-        List<String> linklist = STools.getLinklist(driver);
+        List<String> linklist = Tools.getLinklist(driver);
         Download download = new Download(linklist, name);
         for (int i = 0; i < 10; i++) {
             new Thread(download).start();
         }
     }
 
-    /**
-     * 得到当前页面所有的链接标题，主要用于替换porn-name*/
-
-    public static List<String> getPagetitles(WebDriver driver){
-        List<String> list = new ArrayList<>();
-        List<WebElement> pages = driver.findElements(By.tagName("div"));
-        for (WebElement page : pages) {
-            String title = page.getAttribute("class");
-            if (Pattern.matches(".*?vodname.*?",title)){
-                list.add(page.getAttribute("innerHTML"));
-            }
-        }
-        return list;
-    }
 
     /**
      * 整合，获取当前页所有可显示getPageLinks,打开所有界面
@@ -131,25 +79,5 @@ public class STools {
     public static void PageDownload(WebDriver driver) throws InterruptedException {
         JavascriptExecutor js = (JavascriptExecutor) driver;
         String mother = driver.getWindowHandle();
-        List<String> pageLinks = STools.getPageLinks(driver);//获取页面所有可跳转链接
-        List<String> pagetitles = STools.getPagetitles(driver);//获取页面所有可跳转链接对应标题
-        List<String> handlers = new ArrayList<>();
-        for (String pageLink : pageLinks) {
-            js.executeScript("window.open('"+pageLink+"')");
-            for (String handle : driver.getWindowHandles()) {
-                if (!mother.equals(handle)&&!handlers.contains(handle)){
-                    handlers.add(handle);
-                }
-            }
-        }
-        Thread.sleep(3000);
-        for (int i = 0; i < handlers.size(); i++) {
-            driver.switchTo().window(handlers.get(i));
-            System.out.println("i am ready");
-            js.executeScript("window.stop()");
-            System.out.println("i am ready2");
-            STools.ThreadDownload(driver,pagetitles.get(i));
-            driver.close();
-        }
     }
 }

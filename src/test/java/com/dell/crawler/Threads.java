@@ -16,10 +16,8 @@ class Threads {
     public static void main(String[] args) throws InterruptedException {
         System.setProperty("webdriver.chrome.driver", "C:\\Program Files\\Google\\Chrome\\Application\\chromedriver.exe");
         WebDriver driver = new ChromeDriver();
-        for (int i = 2; i < 5; i++) {
-            driver.get("https://www.a520z6oekgzc.com/home/piclist/7/832-" + i + ".html");
-            STools.PageDownload(driver);
-        }
+        driver.get("https://www.a520z6oekgzc.com/home/piclist/7/832-" + 1 + ".html");
+        STools.PageDownload(driver);
     }
 }
 
